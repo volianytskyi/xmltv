@@ -48,6 +48,7 @@ try {
     $startTime = current($p->attributes())['startTime'];
     $duration = current($p->attributes())['duration'];
     $description = $p->descriptions->description;
+
     $programs[] = [
       'channel' => current($p->attributes())['channel'],
       'start' => convertStartTime($startTime),
@@ -57,9 +58,30 @@ try {
       'desc' => current($description->synopsis)
     ];
   }
-  print_r($programs);
 
+  $xmltv = '<?xml version="1.0" encoding="UTF-8"?><tv generator-info-name="xml tv converter script" generator-info-url="https://github.com/volyanytsky/xmltv"></tv>';
 
+  $epg = new SimpleXMLElement($xmltv);
+  foreach ($channels as $ch)
+  {
+    $channel = $epg->addChild('channel');
+    $channel->addAttribute('id', $ch['id']);
+    $displayName = $channel->addChild('display-name', $ch['display-name']);
+  }
+
+  foreach ($programs as $p)
+  {
+    $programme = $epg->addChild('programme');
+    $programme->addAttribute('start', $p['start']);
+    $programme->addAttribute('stop', $p['stop']);
+    $programme->addAttribute('channel', htmlspecialchars($p['channel']));
+    $title = $programme->addChild('title', htmlspecialchars($p['title']));
+    $title->addAttribute('lang', $p['lang']);
+    $desc = $programme->addChild('desc', htmlspecialchars($p['desc']));
+    $desc->addAttribute('lang', $p['lang']);
+  }
+
+  echo $epg->asXML();
 
 } catch (Exception $e) {
   error_log($e->getMessage());

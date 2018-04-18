@@ -47,10 +47,14 @@ try {
   {
     $startTime = current($p->attributes())['startTime'];
     $duration = current($p->attributes())['duration'];
+    $description = $p->descriptions->description;
     $programs[] = [
       'channel' => current($p->attributes())['channel'],
       'start' => convertStartTime($startTime),
       'stop' => getStopTime($startTime, $duration),
+      'lang' => current($description->attributes()['lang']),
+      'title' => current($description->attributes()['title']),
+      'desc' => current($description->synopsis)
     ];
   }
   print_r($programs);

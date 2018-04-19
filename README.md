@@ -1,10 +1,10 @@
 # XML TV Converter
 
-The script just converts the xml file with [EPG](https://en.wikipedia.org/wiki/Electronic_program_guide) to the proper [XML TV format](http://wiki.xmltv.org/index.php/XMLTVFormat)
+The script just converts the [EPG](https://en.wikipedia.org/wiki/Electronic_program_guide) xml file to the proper [XML TV format](http://wiki.xmltv.org/index.php/XMLTVFormat)
 
 ## Getting Started
 
-Copy the **convert_to_xmltv.php** file into your working directory
+Copy the [convert_to_xmltv.php](convert_to_xmltv.php) file into your working directory
 
 ### Installing
 
@@ -36,7 +36,8 @@ The example original.xml file:
 </epg>
 ```
 
-The output after running the **php convert_to_xmltv.php original.xml**:
+The output after running the **php convert_to_xmltv.php original.xml**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <tv generator-info-name="xml tv converter script" generator-info-url="https://github.com/volyanytsky/xmltv">
@@ -52,7 +53,7 @@ The output after running the **php convert_to_xmltv.php original.xml**:
 
 ## Authors
 
-* **Sergey Volyanytsky** - (https://github.com/volyanytsky)
+* **Sergey Volyanytsky** - https://github.com/volyanytsky
 
 ## License
 

@@ -36,7 +36,7 @@ The example original.xml file:
 </epg>
 ```
 
-The output after running the **php convert_to_xmltv.php original.xml**
+The output epg.xml after running the **php convert_to_xmltv.php original.xml > epg.xml**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

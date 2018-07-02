@@ -21,14 +21,16 @@ try {
   function convertStartTime($time)
   {
     $date = DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $time);
-    return date_format($date, 'YmdHis O');
+    $res = date_format($date, 'YmdHis') . ' +0000';
+    return $res;
   }
 
   function getStopTime($start, $duration)
   {
     $stopTimestamp = DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $start);
     $stopTimestamp->modify("+$duration minute");
-    return $stopTimestamp->format('YmdHis O');
+    $res = $stopTimestamp->format('YmdHis');
+    return $res . ' +0000';
   }
 
   $xml = simplexml_load_file($file);
@@ -42,6 +44,15 @@ try {
     ];
   }
 
+  function getAttribute(SimpleXMLElement $description, $attr)
+  {
+    if(!$description)
+    {
+      return null;
+    }
+    return current($description->attributes()[$attr]);
+  }
+
   $programs = [];
   foreach ($xml->programs->program as $p)
   {
@@ -53,9 +64,9 @@ try {
       'channel' => current($p->attributes())['channel'],
       'start' => convertStartTime($startTime),
       'stop' => getStopTime($startTime, $duration),
-      'lang' => current($description->attributes()['lang']),
-      'title' => current($description->attributes()['title']),
-      'desc' => current($description->synopsis)
+      'lang' => getAttribute($description, 'lang'),
+      'title' => getAttribute($description, 'title'),
+      'desc' => (is_array($description->synopsis)) ? current($description->synopsis) : null
     ];
   }
 
@@ -81,7 +92,13 @@ try {
     $desc->addAttribute('lang', $p['lang']);
   }
 
-  echo $epg->asXML();
+
+  $dom = new DOMDocument('1.0');
+  $dom->preserveWhiteSpace = false;
+  $dom->formatOutput = true;
+  $dom->loadXML($epg->asXML());
+  echo $dom->saveXML();
+
 
 } catch (Exception $e) {
   error_log($e->getMessage());

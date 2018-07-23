@@ -1,28 +1,38 @@
 <?php
 
+$output = '/var/www/epg/epg.xml';
+
 try {
+
+  function logError($msg, $log = '/var/log/stalkerd/epg_convert.log')
+  {
+    error_log('['. date("Y-m-d H:i:s") . ']: ' . "$msg\n", 3, $log);
+  }
 
   if(!isset($argv[1]))
   {
-    throw new Exception('Need to specify the path to the file to convert: php ' . basename(__FILE__) . ' <file.xml>', 1);
+    logError('Need to specify the path to the file to convert: php ' . basename(__FILE__) . ' <file.xml>');
+    exit;
   }
 
   $file = $argv[1];
   if(!file_exists($file))
   {
-    throw new Exception($file . ' not exist', 1);
+    logError("$file not exist");
+    exit;
   }
 
   if(!function_exists('simplexml_load_file'))
   {
-    throw new Exception('PHP XML modules is not installed. Run sudo apt-get install php-xml', 1);
+    logError('PHP XML modules is not installed. Run sudo apt-get install php-xml');
+    exit;
   }
 
   function convertStartTime($time)
   {
     $date = DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $time);
-    $res = date_format($date, 'YmdHis') . ' +0000';
-    return $res;
+    $res = date_format($date, 'YmdHis');
+    return $res . ' +0000';
   }
 
   function getStopTime($start, $duration)
@@ -97,11 +107,24 @@ try {
   $dom->preserveWhiteSpace = false;
   $dom->formatOutput = true;
   $dom->loadXML($epg->asXML());
-  echo $dom->saveXML();
 
+  if(!file_exists($output))
+  {
+    touch($output);
+  }
+  
+  if(is_writable($output))
+  {
+    file_put_contents($output, $dom->saveXML(), LOCK_EX);
+  }
+  else
+  {
+    logError("$output can't be written");
+    exit;
+  }
 
 } catch (Exception $e) {
-  error_log($e->getMessage());
+  logError($e->getMessage());
 }
 
 
